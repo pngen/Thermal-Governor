@@ -1,0 +1,21 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# A CUDA-enabled build links the CUDA runtime, so a consumer of that build
+# must be able to resolve it. The default build declares no CUDA dependency
+# at all, and the core library never requires CUDA.
+if("@_@THERMAL_GOVERNOR_ENABLE_CUDA@" STREQUAL "ON")
+    find_dependency(CUDAToolkit)
+endif()
+
+if(NOT TARGET ThermalGovernor::ThermalGovernor)
+    include("${CMAKE_CURRENT_LIST_DIR}/ThermalGovernorTargets.cmake")
+endif()
+
+# The core library never requires CUDA or NVML. Consumers inherit any
+# platform libraries the exported target needs through its interface.
+check_required_components(ThermalGovernor)
+
+set(ThermalGovernor_VERSION "@PROJECT_VERSION@")
+set(ThermalGovernor_FOUND TRUE)
